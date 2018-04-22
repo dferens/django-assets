@@ -85,11 +85,11 @@ class DjangoDefaultsConfigStorage(DjangoConfigStorage):
             super(DjangoDefaultsConfigStorage, self).__contains__(key)
         )
 
-    def __getitem__(self, item):
+    def __getitem__(self, key):
         if hasattr(self.__storage, self._transform_key(key)):
             return getattr(self.__storage, self._transform_key(key))
         else:
-            return super(DjangoDefaultsConfigStorage, self).__getitem__(item)
+            return super(DjangoDefaultsConfigStorage, self).__getitem__(key)
 
     def __setitem__(self, key, value):
         if not self._set_deprecated(key, value):
