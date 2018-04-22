@@ -71,6 +71,30 @@ class DjangoConfigStorage(ConfigStorage):
         self.__setitem__(key, None)
 
 
+class DjangoDefaultsConfigStorage(DjangoConfigStorage):
+    """
+    Stores keys in memory, uses Django settings for missing ones.
+    """
+    def __init__(self):
+        self.__storage = type('', (), {})()
+
+    def __contains__(self, key):
+        return (
+            hasattr(self.__storage, self._transform_key(key)) or
+            super(DjangoDefaultsConfigStorage, self).__contains__(key)
+        )
+
+    def __getitem__(self, item):
+        if hasattr(self.__storage, self._transform_key(key)):
+            return getattr(self.__storage, self._transform_key(key))
+        else:
+            return super(DjangoDefaultsConfigStorage, self).__getitem__(item)
+
+    def __setitem__(self, key, value):
+        if not self._set_deprecated(key, value):
+            setattr(self.__storage, self._transform_key(key), value)
+
+
 class StorageGlobber(Globber):
     """Globber that works with a Django storage."""
 
@@ -160,7 +184,7 @@ class DjangoEnvironment(BaseEnvironment):
     object holds to Django's own settings object.
     """
 
-    config_storage_class = DjangoConfigStorage
+    config_storage_class = DjangoDefaultsConfigStorage
     resolver_class = DjangoResolver
 
 
