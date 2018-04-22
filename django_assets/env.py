@@ -75,7 +75,8 @@ class DjangoDefaultsConfigStorage(DjangoConfigStorage):
     """
     Stores keys in memory, uses Django settings for missing ones.
     """
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(DjangoDefaultsConfigStorage, self).__init__(*args, **kwargs)
         self.__storage = type('', (), {})()
 
     def __contains__(self, key):
